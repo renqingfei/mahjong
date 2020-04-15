@@ -26,7 +26,13 @@
 <div>
     <span id="rest"></span>
 </div>
-<div><button id="copy">生成牌型</button></div>
+<div><button onclick="location.reload()">重新输入</button><button id="copy">生成牌型</button><button id="show">保存牌型</button><input id="name" type="text" hidden placeholder="请输入牌型名称"><button hidden id="nameBtn">确定</button></div>
+<hr />
+<div>
+    <table id="list" border="1">
+
+    </table>
+</div>
 <input id="hide" type="text" style="border:none;outline:none;caret-color: transparent;background-color: rgba(0, 0, 0, 0);">
 </body>
 <script>
@@ -101,6 +107,73 @@
             document.execCommand("Copy")
             alert("复制成功")
             $("#hide").val("");
+        });
+
+        //查询牌型列表
+        $.get(
+            "/getList",
+            {},
+            function (res) {
+                $("#list").empty();
+                var index = 1;
+                var html = "<tr><td>序号</td><td>牌型名</td><td>点击复制</td><td>删除</td></tr>"
+                for (var s in res){
+                    html+="<tr><td>"+index+"</td><td>"+res[s].name+"</td><td><input data='"+res[s].context+"' type='hidden'> <button name='copy'>复制</button></td><td><button name='del' delId='"+res[s].id+"'>删除</button></td></tr>"
+                    index++;
+                }
+                $("#list").append(html);
+            },
+            "json"
+        );
+        //列表保存牌型
+        $("#list").on('click','[name="copy"]',function () {
+            var copy = $(this).prev().attr("data");
+            $("#hide").val(copy);
+            $("#hide").select();
+            document.execCommand("Copy")
+            alert("复制成功")
+            $("#hide").val("");
+        });
+        //删除牌型
+        $("#list").on('click','[name="del"]',function () {
+            if(window.confirm('是否删除？')){
+                var id = $(this).attr("delId");
+                $.get(
+                    "/del",
+                    {"id":id},
+                    function (res) {
+                        alert(res);
+                        location.reload();
+                    },
+                    "text"
+                )
+            }
+        });
+        $("#show").click(function () {
+            $("#name").val("");
+            $("#name").show();
+            $("#nameBtn").show();
+        });
+        $("#nameBtn").click(function () {
+            var name = $("#name").val();
+            if (name == ''){
+                alert("请输入牌型名称");
+                return;
+            }
+            var context = "";
+            $("img").each(function () {
+                context+=","+mahjongs[$(this).attr("id")];
+            });
+            context = context.substr(1);
+            $.post(
+                "/add",
+                {"name":name,"context":context},
+                function (res) {
+                    alert(res);
+                    location.reload()
+                },
+                "text"
+            );
         });
     })
 </script>
