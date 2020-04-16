@@ -17,10 +17,10 @@
 <body>
 <div><input type="checkbox" name="feng" >无风<input type="checkbox" name="hua" >有花</div>
 <div id="sel">
-    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家一</span><span name="screen" style="float: left;"></span></div>
-    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家二</span><span name="screen" style="float: left;"></span></div>
-    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家三</span><span name="screen" style="float: left;"></span></div>
-    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家四</span><span name="screen" style="float: left;"></span></div>
+    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家一</span><span name="screen" style="float: left;"></span><span style="float: right;margin-right: 200px;"><button name="autoadd" style="height: 60px;" onclick="autoadd(this)">一键填入</button><button name="autodel" style="height: 60px; margin-left: 20px;" onclick="autodel(this)">一键清空</button></span></div>
+    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家二</span><span name="screen" style="float: left;"></span><span style="float: right;margin-right: 200px;"><button name="autoadd" style="height: 60px;" onclick="autoadd(this)">一键填入</button><button name="autodel" style="height: 60px; margin-left: 20px;" onclick="autodel(this)">一键清空</button></span></div>
+    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家三</span><span name="screen" style="float: left;"></span><span style="float: right;margin-right: 200px;"><button name="autoadd" style="height: 60px;" onclick="autoadd(this)">一键填入</button><button name="autodel" style="height: 60px; margin-left: 20px;" onclick="autodel(this)">一键清空</button></span></div>
+    <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">玩家四</span><span name="screen" style="float: left;"></span><span style="float: right;margin-right: 200px;"><button name="autoadd" style="height: 60px;" onclick="autoadd(this)">一键填入</button><button name="autodel" style="height: 60px; margin-left: 20px;" onclick="autodel(this)">一键清空</button></span></div>
     <div style="height: 60px; line-height: 60px; font-size: 16px;"><span style="float: left;margin-right: 20px;">other</span><span name="other" style="float: left;"></span></div>
 </div>
 <hr />
@@ -38,6 +38,7 @@
 <input id="hide" type="text" style="border:none;outline:none;caret-color: transparent;background-color: rgba(0, 0, 0, 0);">
 </body>
 <script>
+    var mahjongs = "";
     $(function () {
         var feng = ",31,31,31,31,41,41,41,41,51,51,51,51,61,61,61,61,71,71,71,71,81,81,81,81,91,91,91,91";
         var hua = "";
@@ -45,7 +46,6 @@
         var color = "rgb(152, 251, 152)", //要变的颜色
             trans = "rgb(0, 0, 0, 0)"; //透明（原来的背景色)
         var mahjong = "";
-        var mahjongs = "";
         init(feng,hua);
 
         $("#sel div").click(function () {
@@ -168,6 +168,7 @@
                     "text"
                 );
             });
+
         });
         $("#show").click(function () {
             $("#name").val("");
@@ -290,6 +291,27 @@
             },
             "json"
         );
+    }
+
+    function autoadd(e) {
+        var slen = $("[name='select']").length;
+        if (slen==0){
+            alert("还没选择玩家");
+            return;
+        }
+        var len = $(e).parent().prev().find("img").length;
+        for (var i = 0;i<13-len;i++){
+            $("#rest").find("img").eq(0).trigger("dblclick");
+        }
+    }
+
+    function autodel(e) {
+        $(e).parent().prev().find("img").map(function () {
+            var id = $(this).attr("id")
+            $(this).remove();
+            var html = "<img src='../png/"+mahjongs[id]+".png' id='"+id+"' width='40' height='55' style='margin:2px 2px 2px 2px;'>"
+            $("#rest").append(html);
+        })
     }
 </script>
 </html>
