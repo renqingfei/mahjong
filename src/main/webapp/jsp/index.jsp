@@ -81,6 +81,28 @@
                 )
             }
         });
+        //回显
+        $("#list").on('click','[name="update"]',function () {
+            $("img").remove();
+            var context = $(this).parents("tr").children().eq(2).find("input").attr("data").replace(/[\r\n]/g,"");
+            var contexts = context.split(",");
+            for (var s in contexts){
+                var html = "<img src='../png/"+contexts[s]+".png' id='"+s+"' width='40' height='55' style='margin:2px 2px 2px 2px;'>"
+                if(s<13){
+                    $("[name='screen']").eq(0).append(html);
+                }else if (s>=13 && s<26){
+                    $("[name='screen']").eq(1).append(html);
+                }else if (s>=26 && s<39){
+                    $("[name='screen']").eq(2).append(html);
+                } else if (s>=39 && s<52){
+                    $("[name='screen']").eq(3).append(html);
+                } else{
+                    $("#rest").append(html);
+                }
+
+            }
+
+        });
         $("#show").click(function () {
             $("#name").val("");
             $("#name").show();
@@ -193,9 +215,9 @@
             function (res) {
                 $("#list").empty();
                 var index = 1;
-                var html = "<tr><td>序号</td><td>牌型名</td><td>点击复制</td><td>删除</td></tr>"
+                var html = "<tr><td>序号</td><td>牌型名</td><td>点击复制</td><td >点击删除</td><td>牌型展示</td></tr>"
                 for (var s in res){
-                    html+="<tr><td>"+index+"</td><td>"+res[s].name+"</td><td><input data='"+res[s].context+"' type='hidden'> <button name='copy'>复制</button></td><td><button name='del' delId='"+res[s].id+"'>删除</button></td></tr>"
+                    html+="<tr><td>"+index+"</td><td>"+res[s].name+"</td><td style='text-align:center'><input data='"+res[s].context+"' type='hidden'> <button name='copy' >复制</button></td><td style='text-align:center'><button name='del' delId='"+res[s].id+"'>删除</button></td><td style='text-align:center'><button name='update'>回显</button></td></tr>"
                     index++;
                 }
                 $("#list").append(html);
