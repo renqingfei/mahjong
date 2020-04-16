@@ -84,6 +84,8 @@
         //回显
         $("#list").on('click','[name="update"]',function () {
             $("img").remove();
+            $("[name='feng']").prop("checked",false);
+            $("[name='hua']").prop("checked",false);
             var context = $(this).parents("tr").children().eq(2).find("input").attr("data").replace(/[\r\n]/g,"");
             var contexts = context.split(",");
             for (var s in contexts){
@@ -99,9 +101,73 @@
                 } else{
                     $("#rest").append(html);
                 }
-
             }
+            mahjongs = contexts;
+            $("#rest").off('dblclick','img');
+            $("#sel").off('dblclick','img');
+            $("#copy").unbind();
+            $("#nameBtn").unbind();
+            $("#rest").on('dblclick','img',function (){
+                var slen = $("[name='select']").length;
+                if (slen==0){
+                    alert("还没选择玩家");
+                    return;
+                }
+                var imgs = $("[name='select']").find("[name='screen']").find("img").length;
+                if (imgs>=13){
+                    alert("请选择其他玩家");
+                    return;
+                }
+                var id = $(this).attr("id");
+                $(this).remove();
+                var html = "<img src='../png/"+mahjongs[id]+".png' id='"+id+"' width='40' height='55' style='margin:2px 2px 2px 2px;'>"
+                if ($("[name='select']").find("[name='other']").length==1){
+                    $("[name='select']").find("[name='other']").append(html);
+                } else{
+                    $("[name='select']").find("[name='screen']").append(html);
+                }
+            });
+            $("#sel").on('dblclick','img',function (){
+                var id = $(this).attr("id");
+                $(this).remove();
+                var html = "<img src='../png/"+mahjongs[id]+".png' id='"+id+"' width='40' height='55' style='margin:2px 2px 2px 2px;'>"
+                $("#rest").append(html);
+            });
+            $("#copy").click(function () {
+                var copy = ""
+                $("img").each(function () {
+                    copy+=","+mahjongs[$(this).attr("id")];
+                });
+                copy = copy.substr(1);
+                $("#hide").val(copy);
+                $("#hide").select();
+                document.execCommand("Copy")
+                alert("复制成功")
+                $("#hide").val("");
+            });
 
+            //保存
+            $("#nameBtn").click(function () {
+                var name = $("#name").val();
+                if (name == ''){
+                    alert("请输入牌型名称");
+                    return;
+                }
+                var context = "";
+                $("img").each(function () {
+                    context+=","+mahjongs[$(this).attr("id")];
+                });
+                context = context.substr(1);
+                $.post(
+                    "/add",
+                    {"name":name,"context":context},
+                    function (res) {
+                        alert(res);
+                        getList();
+                    },
+                    "text"
+                );
+            });
         });
         $("#show").click(function () {
             $("#name").val("");
